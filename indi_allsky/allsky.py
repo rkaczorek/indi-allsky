@@ -855,10 +855,10 @@ class IndiAllSky(object):
             camera_id = int(camera_id)
 
 
-        self._generateDayTimelapse(timespec, camera_id, keogram=False)
+        self._generateDayTimelapse(timespec, camera_id, keogram=False, task_state=TaskQueueState.MANUAL)
 
 
-    def _generateDayTimelapse(self, timespec, camera_id, keogram=True):
+    def _generateDayTimelapse(self, timespec, camera_id, keogram=True, task_state=TaskQueueState.QUEUED):
         if not self.config.get('TIMELAPSE_ENABLE', True):
             logger.warning('Timelapse creation disabled')
             return
@@ -879,7 +879,7 @@ class IndiAllSky(object):
 
         task = IndiAllSkyDbTaskQueueTable(
             queue=TaskQueueQueue.VIDEO,
-            state=TaskQueueState.QUEUED,
+            state=task_state,
             data=jobdata,
         )
         db.session.add(task)
@@ -902,10 +902,10 @@ class IndiAllSky(object):
             camera_id = int(camera_id)
 
 
-        self._generateNightTimelapse(timespec, camera_id, keogram=False)
+        self._generateNightTimelapse(timespec, camera_id, keogram=False, task_state=TaskQueueState.MANUAL)
 
 
-    def _generateNightTimelapse(self, timespec, camera_id, keogram=True):
+    def _generateNightTimelapse(self, timespec, camera_id, keogram=True, task_state=TaskQueueState.QUEUED):
         if not self.config.get('TIMELAPSE_ENABLE', True):
             logger.warning('Timelapse creation disabled')
             return
@@ -926,7 +926,7 @@ class IndiAllSky(object):
 
         task = IndiAllSkyDbTaskQueueTable(
             queue=TaskQueueQueue.VIDEO,
-            state=TaskQueueState.QUEUED,
+            state=task_state,
             data=jobdata,
         )
         db.session.add(task)
@@ -949,10 +949,10 @@ class IndiAllSky(object):
             camera_id = int(camera_id)
 
 
-        self._generateNightKeogram(timespec, camera_id)
+        self._generateNightKeogram(timespec, camera_id, task_state=TaskQueueState.MANUAL)
 
 
-    def _generateNightKeogram(self, timespec, camera_id):
+    def _generateNightKeogram(self, timespec, camera_id, task_state=TaskQueueState.QUEUED):
         if not self.config.get('TIMELAPSE_ENABLE', True):
             logger.warning('Timelapse creation disabled')
             return
@@ -973,7 +973,7 @@ class IndiAllSky(object):
 
         task = IndiAllSkyDbTaskQueueTable(
             queue=TaskQueueQueue.VIDEO,
-            state=TaskQueueState.QUEUED,
+            state=task_state,
             data=jobdata,
         )
         db.session.add(task)
@@ -996,10 +996,10 @@ class IndiAllSky(object):
             camera_id = int(camera_id)
 
 
-        self._generateDayKeogram(timespec, camera_id)
+        self._generateDayKeogram(timespec, camera_id, task_state=TaskQueueState.MANUAL)
 
 
-    def _generateDayKeogram(self, timespec, camera_id):
+    def _generateDayKeogram(self, timespec, camera_id, task_state=TaskQueueState.QUEUED):
         if not self.config.get('TIMELAPSE_ENABLE', True):
             logger.warning('Timelapse creation disabled')
             return
@@ -1020,7 +1020,7 @@ class IndiAllSky(object):
 
         task = IndiAllSkyDbTaskQueueTable(
             queue=TaskQueueQueue.VIDEO,
-            state=TaskQueueState.QUEUED,
+            state=task_state,
             data=jobdata,
         )
         db.session.add(task)
@@ -1038,10 +1038,10 @@ class IndiAllSky(object):
 
 
     def expireData(self):
-        self._expireData()
+        self._expireData(TaskQueueState.MANUAL)
 
 
-    def _expireData(self):
+    def _expireData(self, task_state=TaskQueueState.QUEUED):
         # This will delete old images from the filesystem and DB
         jobdata = {
             'expireData'   : True,
@@ -1055,7 +1055,7 @@ class IndiAllSky(object):
 
         task = IndiAllSkyDbTaskQueueTable(
             queue=TaskQueueQueue.VIDEO,
-            state=TaskQueueState.QUEUED,
+            state=task_state,
             data=jobdata,
         )
         db.session.add(task)
